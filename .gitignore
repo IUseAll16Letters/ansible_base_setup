@@ -1,0 +1,9 @@
+venv/
+.venv/
+
+# ansible generated files
+play.yml
+/inventory/*
+.idea
+*.retry
+logs/*
