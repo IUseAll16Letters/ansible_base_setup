@@ -1,0 +1,17 @@
+---
+- name: set ansible_ssh_port
+  set_fact:
+    ansible_ssh_port: "{{ ansible_ssh_port }}"
+  when: ansible_ssh_port is defined
+
+- debug:
+  msg: "ansible_port: {{ ansible_ssh_port }}"
+
+- name: set sshd_enable for vds
+  set_fact:
+    sshd_enable: true
+  when:
+    - sshd_enable is undefined
+    - server_type == 'vds'
+
+...

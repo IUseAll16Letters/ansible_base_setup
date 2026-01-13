@@ -1,0 +1,15 @@
+- name: isntall sudo
+  apt:
+    name: sudo
+    state: present
+
+- name: create sudo subdirectories
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - /etc/sudoers.d

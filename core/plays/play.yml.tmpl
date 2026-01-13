@@ -1,0 +1,14 @@
+---
+- hosts:
+    - $THOST
+  vars:
+    ansible_port: 22225
+    server_type: vds
+  roles:
+    - ping
+    - init-variables
+    - vds-init
+#    - sudo
+#    - admin
+#    - x-ui
+...

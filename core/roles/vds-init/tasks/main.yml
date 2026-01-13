@@ -1,0 +1,14 @@
+- name: Installing packages from defaults/main.yml
+  become: true
+  apt:
+    pkg: "{{ init_packages|join(',') }}"
+    state: present
+    clean: true
+
+- name: update all packages
+  become: true
+  apt:
+    pkg: "*"
+    state: latest
+    update_cache: yes
+

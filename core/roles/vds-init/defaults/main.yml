@@ -1,0 +1,10 @@
+---
+
+init_packages:
+  - wget
+  - mc
+  - sudo
+  - net-tools
+  - lsof
+
+...
