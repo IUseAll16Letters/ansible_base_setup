@@ -1,0 +1,42 @@
+###########################################################
+# sshd config on the basis of config from  southbridge.io #
+# this file is ansible managed                            #
+###########################################################
+
+Include /etc/ssh/sshd_config.d/*.conf
+
+Protocol    2
+UseDNS      no
+
+Port            {{ sshd_custom_port | default('22') }}
+AddressFamily   inet
+ListenAddress   0.0.0.0
+#ListenAddress  ::
+
+# Authentication
+LoginGraceTime          60s
+PermitRootLogin         {{ sshd_permit_root_login | default('no') }}
+MaxAuthTries            5
+PubkeyAuthentication    yes
+PasswordAuthentication  no
+AuthorizedKeysFile      .ssh/authorized_keys
+
+KbdInteractiveAuthentication no
+
+SyslogFacility AUTHPRIV
+
+UsePAM yes
+
+X11Forwarding yes
+PrintMotd no
+
+#AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+#AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+#AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+AcceptEnv LANG LC_*
+
+ClientAliveInterval 60
+ClientAliveCountMax 3
+
+Subsystem       sftp    /usr/libexec/openssh/sftp-server
+AllowUsers {{ ansible_user | default('all') }}

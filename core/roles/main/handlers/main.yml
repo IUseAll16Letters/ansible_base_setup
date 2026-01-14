@@ -1,2 +1,9 @@
 ---
+- name: restart sshd
+  service:
+    name: sshd
+    state: restarted
+  when:
+    sshd_enable == true
+  become: true
 ...

@@ -7,7 +7,7 @@ if [[ $- != *i* ]]; then
   set -o pipefail
 fi
 
-declare LOGIN="" AS_PYENV=1 verbose="" BECOME="" THOST=""
+declare LOGIN="" AS_PYENV=1 verbose="" BECOME="" THOST="" VAULT=""
 typeset -i DRY=0
 LOGIN="$(whoami)"
 
@@ -35,7 +35,7 @@ main() {
   fi
 
   if (( ! DRY )); then
-    ansible-playbook $b $v "$PLAYBOOK" $BECOME
+    ansible-playbook $b $v $VAULT "$PLAYBOOK"
   fi
 
   if [[ $AS_PYENV == 1 ]]; then
@@ -44,7 +44,17 @@ main() {
   echo "done for $PLAYBOOK"
 }
 
-if ! TEMP=$(getopt -o Kn --longoptions dry-run,ask-become-pass -n "$bn" -- "$@")
+usage() {
+  echo -e "\\n    Usage: $bn [OPTIONS] <target_group>\\n
+    Options:
+    -J, --ask-vault-pass    vault password
+    -n, --dry-run		        no make action, print out command only, assemble playbook
+    -h, --help			        print help
+    target_host			        DNS name of a target host
+"
+}
+
+if ! TEMP=$(getopt -o Jnh --longoptions ask-vault-pass,help,dry-run -n "$bn" -- "$@")
   then
       echo "Terminating..." >&2
       exit 1
@@ -56,15 +66,19 @@ unset TEMP
 
 while true;  do
   case $1 in
-   -K|--ask-become-pass) BECOME="-K"; shift ;;
+   -J|--ask-vault-pass) VAULT="-J"; shift ;;
+   -h|--help) usage; exit 0;;
    -n|--dry-run) DRY=1; shift ;;
       *) shift; break ;;
   esac
 done
 
-$THOST="${1:-NOP}"
+if [[ "${1:-}" == "" ]]; then
+  echo "Must provide hostname to start $bn" >&2;
+  exit 1;
+fi
 
-echo "THO: $THOST"
+export THOST=$1;
 
 readonly C_RST="tput sgr0"
 readonly C_RED="tput setaf 1"
@@ -76,4 +90,4 @@ readonly C_WHITE="tput setaf 7"
 
 echo_info() { $C_CYAN; echo "$*"; $C_RST; }
 
-#main
+main
