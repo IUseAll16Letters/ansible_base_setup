@@ -1,10 +1,12 @@
 ---
-
 init_packages:
   - wget
   - mc
   - sudo
   - net-tools
   - lsof
-
+  - tree
+  - vim
+  - man
+  - traceroute
 ...

@@ -1,3 +1,3 @@
 
-- include: main_task.yml
-  when: "'sudo' in roles"
+- include_tasks: main_task.yml
+  when: "'sudo' in ansible_play_role_names"

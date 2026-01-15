@@ -1,4 +1,4 @@
-- name: isntall sudo
+- name: install sudo
   apt:
     name: sudo
     state: present
@@ -13,3 +13,19 @@
     mode: 0755
   with_items:
     - /etc/sudoers.d
+
+- name: copy configs sudo
+  become: true
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+    validate: 'visudo -cf %s'
+  with_items:
+      - { src: "etc/sudoers.vds",
+          dest: "/etc/sudoers.d/sudoers.vds",
+          mode: "0440"
+      }
+  when: server_type == 'vds'

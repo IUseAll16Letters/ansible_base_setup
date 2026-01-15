@@ -1,0 +1,19 @@
+[project]
+name = "ansible-init"
+version = "0.1.0"
+description = "base server init for vds"
+readme = "readme.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ansible==13.2.0",
+    "ansible-core==2.20.1",
+    "cffi==2.0.0",
+    "cryptography==46.0.3",
+    "jinja2==3.1.6",
+    "markupsafe==3.0.3",
+    "mitogen==0.3.37",
+    "packaging==25.0",
+    "pycparser==2.23",
+    "pyyaml==6.0.3",
+    "resolvelib==1.2.1"
+]

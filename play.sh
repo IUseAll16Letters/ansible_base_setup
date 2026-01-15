@@ -47,6 +47,7 @@ main() {
 usage() {
   echo -e "\\n    Usage: $bn [OPTIONS] <target_group>\\n
     Options:
+
     -J, --ask-vault-pass    vault password
     -n, --dry-run		        no make action, print out command only, assemble playbook
     -h, --help			        print help
@@ -74,7 +75,7 @@ while true;  do
 done
 
 if [[ "${1:-}" == "" ]]; then
-  echo "Must provide hostname to start $bn" >&2;
+  echo "Error: Must provide hostname to start $bn" >&2;
   exit 1;
 fi
 
