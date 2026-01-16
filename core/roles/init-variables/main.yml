@@ -14,4 +14,33 @@
     - sshd_enable is undefined
     - server_type == 'vds'
 
+- name: mkdir/var/lib/flags
+  file:
+    dest: /var/lib/flags
+    state: directory
+    mod: '0755'
+
+- name: save server_type to flags
+  lineinfile:
+    path: /var/lib/flags/_server_fact
+    create: yes
+    regexp: "server_type="
+    line: "server_type={{ server_type }}"
+    state: present
+
+- name: save virtualization_type to flags
+  lineinfile:
+    path: /var/lib/flags/_server_fact
+    create: yes
+    regexp: "virtualization_type="
+    line: "virtualization_type={{ virtualization_type }}"
+    state: present
+  when:
+    - virtualization_type is defined
+
+- name: save roles executed to json
+  copy:
+    content: "{{ roles | to_json }}"
+    dest: /var/lib/flags/_roles.json
+
 ...

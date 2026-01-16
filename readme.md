@@ -39,3 +39,12 @@ suggest your hostname is foo_bar
 mkdir -p ./inventory/host_vars && ansible-vault create inventory/host_vars/foo_bar.yml
 ```
 enter password, *.sh scrip will ask you for that password
+
+
+## Working with roles
+In order to have flexibility with roles and have access to roles variable 
+create a file with your \<username\> inside group_vars, then put all your roles inside
+
+```bash
+mkdir -p ./inventory/group_vars && vi $_/username 
+```
