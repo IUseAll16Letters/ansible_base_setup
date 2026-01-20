@@ -5,7 +5,7 @@
   when: ansible_ssh_port is defined
 
 - debug:
-  msg: "ansible_port: {{ ansible_ssh_port }}"
+    msg: "ansible_port: {{ ansible_ssh_port }}"
 
 - name: set sshd_enable for vds
   set_fact:
@@ -14,11 +14,28 @@
     - sshd_enable is undefined
     - server_type == 'vds'
 
-- name: mkdir/var/lib/flags
+- name: Ensure flags directory exists
   file:
-    dest: /var/lib/flags
+    path: /var/lib/flags
     state: directory
-    mod: '0755'
+    mode: '0755'
+  become: true
+
+- name: Check flags directory exists
+  stat:
+    path: /var/lib/flags
+  register: flags_dir
+  become: true
+
+- name: Fail if flags directory was not created
+  fail:
+    msg: "/var/lib/flags was not created"
+  when: not flags_dir.stat.exists or not flags_dir.stat.isdir
+
+- name: Debug directory creation
+  debug:
+    msg: "/var/lib/flags was created or already existed"
+  when: flags_dir.stat.exists
 
 - name: save server_type to flags
   lineinfile:
@@ -27,6 +44,7 @@
     regexp: "server_type="
     line: "server_type={{ server_type }}"
     state: present
+  become: true
 
 - name: save virtualization_type to flags
   lineinfile:
@@ -35,6 +53,7 @@
     regexp: "virtualization_type="
     line: "virtualization_type={{ virtualization_type }}"
     state: present
+  become: true
   when:
     - virtualization_type is defined
 
@@ -42,5 +61,5 @@
   copy:
     content: "{{ roles | to_json }}"
     dest: /var/lib/flags/_roles.json
-
+  become: true
 ...

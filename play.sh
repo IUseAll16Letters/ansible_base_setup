@@ -7,14 +7,14 @@ if [[ $- != *i* ]]; then
   set -o pipefail
 fi
 
-declare LOGIN="" AS_PYENV=1 verbose="" BECOME="" THOST="" VAULT=""
+declare LOGIN="" AS_PYENV=1 verbose="" BECOME="" THOST="" VAULT="" VERBOSE=""
 typeset -i DRY=0
 LOGIN="$(whoami)"
 
 # constants begin
 readonly TEMPLATE="./core/plays/play.yml.tmpl"
 readonly PLAYBOOK="play.yml"
-readonly PY_ENV_PATH="./venv_ansible/bin/activate"
+readonly PY_ENV_PATH="./.venv/bin/activate"
 readonly bn="$(basename "$0")"
 # constants end
 
@@ -26,6 +26,14 @@ main() {
 
   if [[ $LOGIN == "root" ]]; then
     b="--become"
+  fi
+
+  if (( VERBOSE )); then
+    v="-"
+    while (( VERBOSE )); do
+      v="${v}v";
+      (( VERBOSE-- ));
+    done
   fi
 
   envsubst <"$TEMPLATE" >"$PLAYBOOK"
@@ -51,17 +59,17 @@ usage() {
     -J, --ask-vault-pass    vault password
     -n, --dry-run		        no make action, print out command only, assemble playbook
     -h, --help			        print help
+    -v, --verbose           run ansible-playbook with more detailed output
     target_host			        DNS name of a target host
 "
 }
 
-if ! TEMP=$(getopt -o Jnh --longoptions ask-vault-pass,help,dry-run -n "$bn" -- "$@")
+if ! TEMP=$(getopt -o Jnhv --longoptions ask-vault-pass,help,dry-run -n "$bn" -- "$@")
   then
       echo "Terminating..." >&2
       exit 1
 fi
 
-echo "this is temp $TEMP"
 eval set -- "$TEMP"
 unset TEMP
 
@@ -70,6 +78,7 @@ while true;  do
    -J|--ask-vault-pass) VAULT="-J"; shift ;;
    -h|--help) usage; exit 0;;
    -n|--dry-run) DRY=1; shift ;;
+   -v|--verbose) ((VERBOSE++)); shift ;;
       *) shift; break ;;
   esac
 done
