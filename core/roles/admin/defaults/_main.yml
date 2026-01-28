@@ -1,0 +1,12 @@
+---
+users:
+  - {
+    name: "user1",
+    password: "",
+    comment: "test username, replace"
+  }
+
+admin_shell: /bin/bash
+admin_allow_key_auth: true
+allow_pass_auth: false
+...

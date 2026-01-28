@@ -1,0 +1,4 @@
+timezone: "Europe/Moscow"
+
+enabled_services_vds:
+  - sshd

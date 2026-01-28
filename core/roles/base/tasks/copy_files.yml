@@ -1,0 +1,47 @@
+---
+- name: Create flags directory
+  file:
+    path: /var/lib/flags
+    state: directory
+    mode: 0755
+  become: true
+
+- name: Check flags directory exists
+  stat:
+    path: /var/lib/flags
+  register: flags_dir
+  become: true
+
+- name: Fail if flags directory was not created
+  fail:
+    msg: "/var/lib/flags was not created"
+  when: not flags_dir.stat.exists or not flags_dir.stat.isdir
+
+- name: save server_type to flags
+  lineinfile:
+    path: /var/lib/flags/_server_fact
+    create: yes
+    regexp: "server_type="
+    line: "server_type={{ server_type }}"
+    state: present
+  become: true
+
+- name: save virtualization_type to flags
+  lineinfile:
+    path: /var/lib/flags/_server_fact
+    create: yes
+    regexp: "virtualization_type="
+    line: "virtualization_type={{ virtualization_type }}"
+    state: present
+  become: true
+  when:
+    - virtualization_type is defined
+
+
+- name: save roles executed to json
+  copy:
+    content: "{{ roles | to_json }}"
+    dest: /var/lib/flags/_roles.json
+  become: true
+
+...

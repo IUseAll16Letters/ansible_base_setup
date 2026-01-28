@@ -1,0 +1,7 @@
+
+- name: allow to compress logs
+  lineinfile:
+    path: /etc/logrotate.conf
+    regexp: '^\s*#*\s*compress'
+    line: "compress"
+    state: present

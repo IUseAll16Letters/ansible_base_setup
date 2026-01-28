@@ -1,0 +1,50 @@
+- name: create admin users
+  user:
+    name: "{{ item.name }}"
+    create_home: true
+    comment: "{{ item.comment }}"
+    password: "{{ item.password }}"
+    shell: "{{ admin_shell | default('/bin/sh') }}"
+    state: present
+    groups:
+      - sudo
+    append: true
+    update_password: always
+  with_items:
+    - "{{ users }}"
+  when:
+    - (admin_allowed_list is not defined) or (admin_allowed_list is defined and item.name in admin_allowed_list)
+
+- name: record all admins names
+  lineinfile:
+    path: "/root/.admins"
+    create: true
+    state: present
+    line: "{{ item.name }}"
+  with_items:
+      - "{{ users }}"
+  when:
+    - (admin_allowed_list is not defined) or (admin_allowed_list is defined and item.name in admin_allowed_list)
+  become: true
+  tags: [ users ]
+
+- name: Set SSH keys
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ lookup('file', 'home/'~ item.name ~'/.ssh/authorized_keys') }}"
+    state: present
+    #exclusive: "{{ admin_keys_exclusive|ternary(true,false) }}"
+  with_items:
+    - "{{ users }}"
+  when:
+    - lookup('pipe', '[ -f ' + role_path + '/files/home/' + item.name + '/.ssh/authorized_keys ] && echo "file_exists" || :') == 'file_exists'
+  tags: [ users, keys ]
+
+#- name: delete users
+#  user:
+#    name: "{{ item.name }}"
+#    state: absent
+#  with_items:
+#      - "{{ deleted_users }}"
+#  when:
+#    - (deleted_users is defined)

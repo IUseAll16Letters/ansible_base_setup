@@ -1,4 +1,0 @@
----
-
-- name: try reach server
-  ping:

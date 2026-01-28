@@ -1,0 +1,5 @@
+---
+
+- name: ping server
+  ping: msg="foo"
+...

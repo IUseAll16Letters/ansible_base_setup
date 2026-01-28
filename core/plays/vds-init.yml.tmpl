@@ -1,0 +1,18 @@
+---
+- hosts:
+    - $THOST
+  vars:
+    ansible_port: 22
+    ansible_user: $LOGIN
+    server_type: vds
+  pre_tasks:
+    - fail: msg="Os family must be Debian, got {{ ansible_distribution }} instead"
+      when: ansible_os_family != "Debian"
+  roles:
+    - init-variables
+    - admin
+    - sudo
+    - vds-init
+    - sshd
+    #- x-ui
+...

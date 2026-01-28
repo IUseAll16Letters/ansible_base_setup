@@ -1,0 +1,8 @@
+---
+
+- import_tasks: copy_files.yml
+- import_tasks: timezone.yml
+- import_tasks: services.yml
+- import_tasks: logrotate.yml
+
+...

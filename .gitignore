@@ -9,3 +9,8 @@ play.yml
 .idea
 *.retry
 logs/*
+
+# user files
+authorized_keys
+
+core/roles/admin/defaults/main.yml

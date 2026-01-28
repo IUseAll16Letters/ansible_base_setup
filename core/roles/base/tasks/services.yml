@@ -1,0 +1,7 @@
+- name: add services vs
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items: "{{ enabled_services_vds }}"
+  when: ( server_type == 'vs' ) or ( server_type == 'vds' )

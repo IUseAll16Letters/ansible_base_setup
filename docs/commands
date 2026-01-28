@@ -1,0 +1,22 @@
+# parse all IPs in network
+nmap -sP 192.168.1.*/24
+
+# all cron jobs
+for user in $(cut -f1 -d: /etc/passwd); do crontab -u $user -l; done
+for user in $(getent passwd | cut -f1 -d: ); do echo $user; crontab -u $user -l; done
+
+# fixed mac conf
+# show current wi-fi mac
+ip link show wlan0
+# path: /etc/systemd/network/10-wlan0.link
+[Match]
+OriginalName=wlan0
+
+[Link]
+MACAddress=02:11:22:33:44:55
+
+# show all active ports
+ss -lntup
+
+# create pass using ansible-vault and passlib
+ansible-vault encrypt_string --stdin-name 'ansible_ssh_pass'

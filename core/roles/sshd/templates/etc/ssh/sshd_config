@@ -3,8 +3,6 @@
 # this file is ansible managed                            #
 ###########################################################
 
-Include /etc/ssh/sshd_config.d/*.conf
-
 Protocol    2
 UseDNS      no
 
@@ -39,4 +37,4 @@ ClientAliveInterval 60
 ClientAliveCountMax 3
 
 Subsystem       sftp    /usr/libexec/openssh/sftp-server
-AllowUsers {{ ansible_user | default('all') }}
+AllowUsers {{ users | map(attribute='name') | join(', ') }}

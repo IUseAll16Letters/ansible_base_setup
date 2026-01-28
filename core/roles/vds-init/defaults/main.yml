@@ -9,4 +9,8 @@ init_packages:
   - vim
   - man
   - traceroute
+
+enabled_services_ds:
+  - sshd
+
 ...

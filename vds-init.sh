@@ -7,24 +7,27 @@ if [[ $- != *i* ]]; then
   set -o pipefail
 fi
 
-declare LOGIN="" AS_PYENV=1 verbose="" BECOME="" THOST="" VAULT="" VERBOSE=""
+# TODO add fail fast.
+declare LOGIN="root" AS_PYENV=1 THOST="" VERBOSE="" VAULT="" TEMPLATE="./core/plays/vds-init.yml.tmpl"
+export LOGIN
 typeset -i DRY=0
-#LOGIN="$(whoami)"
 
 # constants begin
-readonly TEMPLATE="./core/plays/play.yml.tmpl"
-readonly PLAYBOOK="play.yml"
+readonly PLAYBOOK="vds-init.yml"
 readonly PY_ENV_PATH="./.venv/bin/activate"
 readonly bn="$(basename "$0")"
 # constants end
 
-declare LOGIN="$(whoami)"
 echo "starting script as: ${LOGIN}"
 
 main() {
+  local fn=${FUNCNAME[0]}
+  local TEMPLATE="./core/plays/$PLAYBOOK.tmpl"
+  echo_info "Template: $TEMPLATE"
+
   local b="" v="" k=""
 
-  if [[ $LOGIN == "root" ]]; then
+  if [[ $LOGIN != "root" ]]; then
     b="--become"
   fi
 
@@ -36,14 +39,15 @@ main() {
     done
   fi
 
-  envsubst <"$TEMPLATE" > "$PLAYBOOK"
+  envsubst < "$TEMPLATE" > "$PLAYBOOK"
   if [[ $AS_PYENV == 1 ]]; then
     source $PY_ENV_PATH
     echo_info "Running as python_env(as_pyenv = $AS_PYENV): $(python --version)";
   fi
 
   if (( ! DRY )); then
-    ansible-playbook $b $v $VAULT "$PLAYBOOK"
+    echo "Executing cmd: ansible-playbook -i ./inventory/hosts "--limit=$THOST" "$PLAYBOOK" $VAULT $b $v --diff --force-handlers"
+    ansible-playbook -i inventory/hosts "--limit=$THOST" "$PLAYBOOK" $VAULT $b $v --diff --force-handlers
   fi
 
   if [[ $AS_PYENV == 1 ]]; then
@@ -101,4 +105,5 @@ readonly C_WHITE="tput setaf 7"
 
 echo_info() { $C_CYAN; echo "$*"; $C_RST; }
 
+echo_info "executing for: $THOST"
 main
